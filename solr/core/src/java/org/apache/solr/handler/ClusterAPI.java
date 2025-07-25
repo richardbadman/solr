@@ -73,6 +73,8 @@ public class ClusterAPI {
     this.configSetsHandler = configSetsHandler;
   }
 
+  // Rewrite - DONE
+  // Link - TODO
   @EndPoint(method = GET, path = "/cluster/node-roles", permission = COLL_READ_PERM)
   public void roles(SolrQueryRequest req, SolrQueryResponse rsp) throws Exception {
     rsp.add(
@@ -128,6 +130,8 @@ public class ClusterAPI {
                 2)));
   }
 
+  // Rewrite - DONE
+  // Link - TODO
   @EndPoint(method = GET, path = "/cluster/node-roles/node/{node}", permission = COLL_READ_PERM)
   @SuppressWarnings("unchecked")
   public void rolesForNode(SolrQueryRequest req, SolrQueryResponse rsp) throws Exception {
@@ -155,6 +159,8 @@ public class ClusterAPI {
     }
   }
 
+  // Rewrite - DONE
+  // Link - TODO
   @EndPoint(method = GET, path = "/cluster/node-roles/supported", permission = COLL_READ_PERM)
   public void supportedRoles(SolrQueryRequest req, SolrQueryResponse rsp) throws Exception {
     Map<String, Object> roleModesSupportedMap = new HashMap<>();

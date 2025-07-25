@@ -16,7 +16,7 @@
 */
 
 solrAdminApp.controller('CloudController',
-    function($scope, $location, Zookeeper, Constants, Collections, System, Metrics, ZookeeperStatus) {
+    function($scope, $location, Zookeeper, Constants, Collections, System, Metrics, ZookeeperStatus, NodeRoles) {
 
         $scope.showDebug = false;
 
@@ -37,7 +37,7 @@ solrAdminApp.controller('CloudController',
             graphSubController($scope, Zookeeper, false);
         } else if (view === "nodes") {
             $scope.resetMenu("cloud-nodes", Constants.IS_ROOT_PAGE);
-            nodesSubController($scope, Collections, System, Metrics);
+            nodesSubController($scope, Collections, System, Metrics, NodeRoles);
         } else if (view === "zkstatus") {
             $scope.resetMenu("cloud-zkstatus", Constants.IS_ROOT_PAGE);
             zkStatusSubController($scope, ZookeeperStatus, false);
@@ -107,7 +107,7 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-var nodesSubController = function($scope, Collections, System, Metrics) {
+var nodesSubController = function($scope, Collections, System, Metrics, NodeRoles) {
   $scope.pageSize = 10;
   $scope.showNodes = true;
   $scope.showTree = false;
@@ -391,6 +391,21 @@ var nodesSubController = function($scope, Collections, System, Metrics) {
     });
 
     /*
+      Fetch the node roles for all nodes.
+     */
+    for (var node in nodes) {
+      NodeRoles.getNodeRoles(function(result) {
+        console.log("all roles: " + result);
+      });
+      NodeRoles.getRolesByNode(decodeURIComponent(node), function(result) {
+        console.log(result);
+        nodes[node]['coordinator'] = result.coordinator;
+        nodes[node]['data'] = result.data;
+        nodes[node]['overseer'] = result.overseer;
+      });
+    }
+
+    /*
      Fetch metrics for all selected nodes. Only pull the metrics that we'll show to save bandwidth
      Pick the data we want to display and add it to the node-centric data structure
       */
@@ -515,6 +530,7 @@ var nodesSubController = function($scope, Collections, System, Metrics) {
     $scope.filteredHosts = filteredHosts;
   };
   $scope.initClusterState();
+  window.solrNodes = $scope.nodes;
 };
 
 var zkStatusSubController = function($scope, ZookeeperStatus) {

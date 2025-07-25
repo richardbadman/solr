@@ -426,4 +426,10 @@ solrAdminServices.factory('System',
         };
         
         return service;
-      }]);
+      }])
+.factory('NodeRoles',
+  function() {
+    solrApi.ApiClient.instance.basePath = '/api';
+    delete solrApi.ApiClient.instance.defaultHeaders["User-Agent"];
+    return new solrApi.ClusterApi();
+  });
