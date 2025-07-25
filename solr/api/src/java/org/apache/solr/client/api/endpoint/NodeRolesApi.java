@@ -26,26 +26,25 @@ import org.apache.solr.client.api.model.NodeRolesResponse;
 
 @Path("/cluster/node-roles")
 public interface NodeRolesApi {
-    @GET
-    @Operation(
-        summary = "List the roles of all nodes in the cluster.",
-        tags = {"cluster"})
-    NodeRolesResponse getNodeRoles() throws Exception;
+  @GET
+  @Operation(
+      summary = "List the roles of all nodes in the cluster.",
+      tags = {"cluster"})
+  NodeRolesResponse getNodeRoles() throws Exception;
 
-    @GET
-    @Path("/supported")
-    @Operation(
-        summary = "List the supported roles for nodes in the cluster.",
-        tags = {"cluster"})
-    NodeRolesResponse getSupportedNodeRoles() throws Exception;
+  @GET
+  @Path("/supported")
+  @Operation(
+      summary = "List the supported roles for nodes in the cluster.",
+      tags = {"cluster"})
+  NodeRolesResponse getSupportedNodeRoles() throws Exception;
 
-    @GET
-    @Path("/node/{node}")
-    @Operation(
-        summary = "List the roles of a specific node in the cluster.",
-        tags = {"cluster"})
-    GetRolesForNodeResponse getRolesForNode(
-        @Parameter(description = "Node name.", required = true) @PathParam("node")
-            String node)
-        throws Exception;
+  @GET
+  @Path("/node/{node}")
+  @Operation(
+      summary = "List the roles of a specific node in the cluster.",
+      tags = {"cluster"})
+  GetRolesForNodeResponse getRolesForNode(
+      @Parameter(description = "Node name.", required = true) @PathParam("node") String node)
+      throws Exception;
 }

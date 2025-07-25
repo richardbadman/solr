@@ -17,14 +17,13 @@
 package org.apache.solr.client.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
 
 public class NodeRolesResponse extends SolrJerseyResponse {
-    @JsonProperty("node-roles")
-    public Map<String, Map<String, List<String>>> nodeRoles;
+  @JsonProperty("node-roles")
+  public Map<String, Map<String, List<String>>> nodeRoles;
 
-    @JsonProperty("supported-roles")
-    public Map<String, Map<String, List<String>>> supportedRoles;
+  @JsonProperty("supported-roles")
+  public Map<String, Map<String, List<String>>> supportedRoles;
 }

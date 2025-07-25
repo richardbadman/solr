@@ -138,6 +138,10 @@ public class ZkStateReader implements SolrCloseable {
   public static final String TLOG_REPLICAS = "tlogReplicas";
   public static final String READ_ONLY = "readOnly";
 
+  public ExecutorService getNotifications() {
+    return notifications;
+  }
+
   public static final String CONFIGS_ZKNODE = "/configs";
   public static final String CONFIGNAME_PROP = "configName";
 
@@ -1177,7 +1181,10 @@ public class ZkStateReader implements SolrCloseable {
     return securityNodeWatcher.getSecurityProps(getFresh);
   }
 
-
+  public List<String> getNodesInNodeRoleMode(String role, String mode) throws InterruptedException, KeeperException {
+    String path = NODE_ROLES + "/" + role + "/" + mode;
+    return zkClient.getChildren(path, null, true);
+  }
 
   /**
    * Returns the baseURL corresponding to a given node's nodeName -- NOTE: does not (currently)
