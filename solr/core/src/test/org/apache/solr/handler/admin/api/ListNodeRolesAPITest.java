@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.solr.SolrTestCaseJ4;
+import org.apache.solr.client.api.model.GetRolesForNodeResponse;
 import org.apache.solr.client.api.model.NodeRolesResponse;
 import org.apache.solr.cloud.ZkController;
 import org.apache.solr.cloud.api.collections.DistributedCollectionConfigSetCommandRunner;
@@ -45,6 +46,14 @@ public class ListNodeRolesAPITest extends SolrTestCaseJ4 {
   private ListNodeRoles listNodeRolesAPI;
   private ZkStateReader mockZkStateReader;
 
+  private List<String> dataOnNodes = List.of("node1", "node2");
+  private List<String> dataOffNodes = List.of("node3");
+  private List<String> coordinatorOnNodes = List.of("node3");
+  private List<String> coordinatorOffNodes = List.of("node1", "node2");
+  private List<String> overseerAllowedNodes = List.of("node1", "node2");
+  private List<String> overseerDisallowedNodes = List.of();
+  private List<String> overseerPreferredNodes = List.of("node3");
+
   @BeforeClass
   public static void ensureWorkingMockito() {
     SolrTestCaseJ4.assumeWorkingMockito();
@@ -56,6 +65,13 @@ public class ListNodeRolesAPITest extends SolrTestCaseJ4 {
     super.setUp();
 
     mockZkStateReader = mock(ZkStateReader.class);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.DATA.roleName, NodeRoles.MODE_ON)).thenReturn(dataOnNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.DATA.roleName, NodeRoles.MODE_OFF)).thenReturn(dataOffNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.COORDINATOR.roleName, NodeRoles.MODE_ON)).thenReturn(coordinatorOnNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.COORDINATOR.roleName, NodeRoles.MODE_OFF)).thenReturn(coordinatorOffNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_ALLOWED)).thenReturn(overseerAllowedNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_DISALLOWED)).thenReturn(overseerDisallowedNodes);
+    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_PREFERRED)).thenReturn(overseerPreferredNodes);
 
     ZkController zkController = mock(ZkController.class);
     when(zkController.getZkStateReader()).thenReturn(mockZkStateReader);
@@ -72,23 +88,6 @@ public class ListNodeRolesAPITest extends SolrTestCaseJ4 {
 
   @Test
   public void testGetNodeRoles() throws Exception {
-    List<String> dataOnNodes = List.of("node1", "node2");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.DATA.roleName, NodeRoles.MODE_ON)).thenReturn(dataOnNodes);
-    List<String> dataOffNodes = List.of("node3");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.DATA.roleName, NodeRoles.MODE_OFF)).thenReturn(dataOffNodes);
-
-    List<String> coordinatorOnNodes = List.of("node3");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.COORDINATOR.roleName, NodeRoles.MODE_ON)).thenReturn(coordinatorOnNodes);
-    List<String> coordinatorOffNodes = List.of("node1", "node2");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.COORDINATOR.roleName, NodeRoles.MODE_OFF)).thenReturn(coordinatorOffNodes);
-
-    List<String> overseerAllowedNodes = List.of("node1", "node2");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_ALLOWED)).thenReturn(overseerAllowedNodes);
-    List<String> overseerDisallowedNodes = List.of();
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_DISALLOWED)).thenReturn(overseerDisallowedNodes);
-    List<String> overseerPreferredNodes = List.of("node3");
-    when(mockZkStateReader.getNodesInNodeRoleMode(NodeRoles.Role.OVERSEER.roleName, NodeRoles.MODE_PREFERRED)).thenReturn(overseerPreferredNodes);
-
     Map<String, Map<String, List<String>>> nodeRolesData = Map.of(
         NodeRoles.Role.DATA.roleName, Map.of(NodeRoles.MODE_ON, dataOnNodes, NodeRoles.MODE_OFF, dataOffNodes),
         NodeRoles.Role.COORDINATOR.roleName, Map.of(NodeRoles.MODE_ON, coordinatorOnNodes, NodeRoles.MODE_OFF, coordinatorOffNodes),
@@ -99,5 +98,25 @@ public class ListNodeRolesAPITest extends SolrTestCaseJ4 {
 
     NodeRolesResponse response = listNodeRolesAPI.getNodeRoles();
     assertEquals(nodeRolesData, response.nodeRoles);
+  }
+
+  @Test
+  public void testGetSupportedNodeRoles() throws Exception {
+    List<String> supportedRoles = List.of(NodeRoles.Role.OVERSEER.roleName, NodeRoles.Role.DATA.roleName, NodeRoles.Role.COORDINATOR.roleName);
+
+    NodeRolesResponse response = listNodeRolesAPI.getSupportedNodeRoles();
+    assertTrue(response.supportedRoles.keySet().containsAll(supportedRoles));
+    assertTrue(response.supportedRoles.keySet().size() == supportedRoles.size());
+  }
+
+  @Test
+  public void testGetRolesForNode() throws Exception {
+    String node = "node1";
+
+    GetRolesForNodeResponse response = listNodeRolesAPI.getRolesForNode(node);
+
+    assertEquals(NodeRoles.MODE_ON, response.data);
+    assertEquals(NodeRoles.MODE_OFF, response.coordinator);
+    assertEquals(NodeRoles.MODE_ALLOWED, response.overseer);
   }
 }
