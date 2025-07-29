@@ -103,6 +103,14 @@ public class ListNodeRoles extends AdminAPIBase implements NodeRolesApi {
     return response;
   }
 
+  @Override
+  @PermissionName(COLL_READ_PERM)
+  public NodeRolesResponse getNodesForRole(String role) throws Exception {
+    final NodeRolesResponse response = instantiateJerseyResponse(NodeRolesResponse.class);
+    response.nodeRoles = Map.of(role, getDataForRole(role));
+    return response;
+  }
+
   // Get a map of all roles, their supported modes, and the nodes are assigned these role-modes.
   private Map<String, Map<String, List<String>>> getNodeRolesData() throws Exception {
     Map<String, Map<String, List<String>>> nodeRolesData = new HashMap<>();
@@ -118,10 +126,6 @@ public class ListNodeRoles extends AdminAPIBase implements NodeRolesApi {
     final CoreContainer coreContainer = fetchAndValidateZooKeeperAwareCoreContainer();
     final ZkStateReader zkStateReader = coreContainer.getZkController().getZkStateReader();
 
-//    final DistribStateManager zk =
-//        coreContainer.getZkController().getSolrCloudManager().getDistribStateManager();
-
-//    String path = ZkStateReader.NODE_ROLES + "/" + role;
     Map<String, List<String>> nodes = new HashMap<>();
 
     for (String mode : NodeRoles.Role.getRole(role).supportedModes()) {

@@ -1181,7 +1181,8 @@ public class ZkStateReader implements SolrCloseable {
     return securityNodeWatcher.getSecurityProps(getFresh);
   }
 
-  public List<String> getNodesInNodeRoleMode(String role, String mode) throws InterruptedException, KeeperException {
+  public List<String> getNodesInNodeRoleMode(String role, String mode)
+      throws InterruptedException, KeeperException {
     String path = NODE_ROLES + "/" + role + "/" + mode;
     return zkClient.getChildren(path, null, true);
   }

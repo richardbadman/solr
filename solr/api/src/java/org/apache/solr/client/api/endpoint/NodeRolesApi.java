@@ -35,7 +35,7 @@ public interface NodeRolesApi {
   @GET
   @Path("/supported")
   @Operation(
-      summary = "List the supported roles for nodes in the cluster.",
+      summary = "List the supported roles in the cluster.",
       tags = {"cluster"})
   NodeRolesResponse getSupportedNodeRoles() throws Exception;
 
@@ -46,5 +46,14 @@ public interface NodeRolesApi {
       tags = {"cluster"})
   GetRolesForNodeResponse getRolesForNode(
       @Parameter(description = "Node name.", required = true) @PathParam("node") String node)
+      throws Exception;
+
+  @GET
+  @Path("/role/{role}")
+  @Operation(
+      summary = "List the nodes of all modes for a given role in the cluster.",
+      tags = {"cluster"})
+  NodeRolesResponse getNodesForRole(
+      @Parameter(description = "Role name.", required = true) @PathParam("role") String role)
       throws Exception;
 }
