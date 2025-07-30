@@ -45,11 +45,6 @@ public class ListNodeRoles extends AdminAPIBase implements NodeRolesApi {
     super(coreContainer, solrQueryRequest, solrQueryResponse);
   }
 
-  // TODO - /api/culster/node-roles/role/{role} needed
-  // Can just use the getDataForRole() method
-  // Might need to convert these to ZkNodeProps?
-
-  //
   @Override
   @PermissionName(COLL_READ_PERM)
   public NodeRolesResponse getNodeRoles() throws Exception {
@@ -107,7 +102,19 @@ public class ListNodeRoles extends AdminAPIBase implements NodeRolesApi {
   @PermissionName(COLL_READ_PERM)
   public NodeRolesResponse getNodesForRole(String role) throws Exception {
     final NodeRolesResponse response = instantiateJerseyResponse(NodeRolesResponse.class);
+
     response.nodeRoles = Map.of(role, getDataForRole(role));
+    return response;
+  }
+
+  @Override
+  @PermissionName(COLL_READ_PERM)
+  public NodeRolesResponse getNodesForRoleAndMode(String role, String mode) throws Exception {
+    final NodeRolesResponse response = instantiateJerseyResponse(NodeRolesResponse.class);
+    Map<String, List<String>> nodes = new HashMap<>();
+
+    nodes.put(mode, getDataForRole(role).getOrDefault(mode, List.of()));
+    response.nodeRoles = Map.of(role, nodes);
     return response;
   }
 

@@ -56,4 +56,14 @@ public interface NodeRolesApi {
   NodeRolesResponse getNodesForRole(
       @Parameter(description = "Role name.", required = true) @PathParam("role") String role)
       throws Exception;
+
+  @GET
+  @Path("/role/{role}/{mode}")
+  @Operation(
+      summary = "List the nodes of a specific mode for a given role in the cluster.",
+      tags = {"cluster"})
+  NodeRolesResponse getNodesForRoleAndMode(
+      @Parameter(description = "Role name.", required = true) @PathParam("role") String role,
+      @Parameter(description = "Mode name.", required = true) @PathParam("mode") String mode)
+      throws Exception;
 }

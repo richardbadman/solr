@@ -51,6 +51,7 @@ public class InfoHandler extends RequestHandlerBase {
     handlers.put("properties", new PropertiesRequestHandler(coreContainer));
     handlers.put("logging", new LoggingHandler(coreContainer));
     handlers.put("system", new SystemInfoHandler(coreContainer));
+    handlers.put("node-roles", new NodeRolesHandler(coreContainer));
     if (coreContainer.getHealthCheckHandler() == null) {
       throw new IllegalStateException(
           "HealthCheckHandler needs to be initialized before creating InfoHandler");
@@ -85,6 +86,7 @@ public class InfoHandler extends RequestHandlerBase {
   }
 
   private void handle(SolrQueryRequest req, SolrQueryResponse rsp, String path) {
+    System.out.println("Request: " + req + ", path: " + path);
     int i = path.lastIndexOf('/');
     String name = path.substring(i + 1, path.length());
     RequestHandlerBase handler = handlers.get(name.toLowerCase(Locale.ROOT));
@@ -125,6 +127,10 @@ public class InfoHandler extends RequestHandlerBase {
     return (SystemInfoHandler) handlers.get("system");
   }
 
+  public NodeRolesHandler getNodeRolesHandler() {
+    return (NodeRolesHandler) handlers.get("node-roles");
+  }
+
   public HealthCheckHandler getHealthCheckHandler() {
     return (HealthCheckHandler) handlers.get("health");
   }
@@ -143,6 +149,10 @@ public class InfoHandler extends RequestHandlerBase {
 
   protected void setSystemInfoHandler(SystemInfoHandler systemInfoHandler) {
     handlers.put("system", systemInfoHandler);
+  }
+
+  protected void setNodeRolesHandler(NodeRolesHandler nodeRolesHandler) {
+    handlers.put("node-roles", nodeRolesHandler);
   }
 
   protected void setHealthCheckHandler(HealthCheckHandler healthCheckHandler) {
@@ -166,6 +176,7 @@ public class InfoHandler extends RequestHandlerBase {
     list.addAll(handlers.get("properties").getApis());
     list.addAll(handlers.get("logging").getApis());
     list.addAll(handlers.get("system").getApis());
+    list.addAll(handlers.get("node-roles").getApis());
     list.addAll(handlers.get("health").getApis());
     return List.copyOf(list);
   }
@@ -177,6 +188,7 @@ public class InfoHandler extends RequestHandlerBase {
     apis.addAll(handlers.get("properties").getJerseyResources());
     apis.addAll(handlers.get("logging").getJerseyResources());
     apis.addAll(handlers.get("system").getJerseyResources());
+    apis.addAll(handlers.get("node-roles").getJerseyResources());
     apis.addAll(handlers.get("health").getJerseyResources());
     return apis;
   }

@@ -142,6 +142,18 @@ public class ListNodeRolesAPITest extends SolrTestCaseJ4 {
   }
 
   @Test
+  public void testGetNodesForRoleAndMode() throws Exception {
+    String role = NodeRoles.Role.COORDINATOR.roleName;
+    String mode = NodeRoles.MODE_ON;
+
+    Map<String, List<String>> expectedData = Map.of(NodeRoles.MODE_ON, coordinatorOnNodes);
+
+    NodeRolesResponse response = listNodeRolesAPI.getNodesForRoleAndMode(role, mode);
+
+    assertEquals(expectedData, response.nodeRoles.get(role));
+  }
+
+  @Test
   public void testGetRolesForNode() throws Exception {
     String node = "node1";
 
