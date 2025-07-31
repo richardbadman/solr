@@ -424,12 +424,13 @@ solrAdminServices.factory('System',
           }
           return params;
         };
-        
+
         return service;
       }])
 .factory('NodeRoles',
   function() {
-    solrApi.ApiClient.instance.basePath = '/api';
-    delete solrApi.ApiClient.instance.defaultHeaders["User-Agent"];
-    return new solrApi.ClusterApi();
+    const apiClient = solrApi.ApiClient.instance;
+    apiClient.basePath = '/api';
+    delete apiClient.defaultHeaders["User-Agent"];
+    return new solrApi.ClusterApi(apiClient);
   });

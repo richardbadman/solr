@@ -2,7 +2,6 @@ package org.apache.solr.handler.admin;
 
 import org.apache.solr.api.Api;
 import org.apache.solr.api.JerseyResource;
-import org.apache.solr.common.util.NamedList;
 import org.apache.solr.client.api.model.SolrJerseyResponse;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.core.CoreContainer;
@@ -29,15 +28,14 @@ public class NodeRolesHandler extends RequestHandlerBase {
     this.coreContainer = coreContainer;
   }
 
-//  @Override
-//  public final void init(NamedList<?> args) {}
-
   public CoreContainer getCoreContainer() {
     return this.coreContainer;
   }
 
   @Override
   public void handleRequestBody(SolrQueryRequest req, SolrQueryResponse rsp) throws Exception {
+    log.warn("Node Role handler has been used");
+    log.warn("Path: {}", req.getPath());
     rsp.setHttpCaching(false);
 
     if (coreContainer == null || coreContainer.isShutDown()) {
@@ -50,7 +48,8 @@ public class NodeRolesHandler extends RequestHandlerBase {
     if (!coreContainer.isZooKeeperAware()) {
       rsp.setException(
           new SolrException(
-            SolrException.ErrorCode.BAD_REQUEST, "Solr instance is not running in SolrCloud mode."));
+            SolrException.ErrorCode.BAD_REQUEST,
+            "Solr instance is not running in SolrCloud mode."));
       return;
     } else {
       if (log.isDebugEnabled()) {
@@ -90,8 +89,6 @@ public class NodeRolesHandler extends RequestHandlerBase {
 
   @Override
   public Name getPermissionName(AuthorizationContext request) {
-    // This handler does not have any actions that require permissions.
-    // It is used to list node roles and does not modify any data.
     return Name.COLL_READ_PERM;
   }
 }
