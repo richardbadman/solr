@@ -121,6 +121,7 @@ import org.apache.solr.handler.admin.CoreAdminHandler.CoreAdminOp;
 import org.apache.solr.handler.admin.HealthCheckHandler;
 import org.apache.solr.handler.admin.InfoHandler;
 import org.apache.solr.handler.admin.MetricsHandler;
+import org.apache.solr.handler.admin.NodeRolesHandler;
 import org.apache.solr.handler.admin.SecurityConfHandler;
 import org.apache.solr.handler.admin.SecurityConfHandlerLocal;
 import org.apache.solr.handler.admin.SecurityConfHandlerZk;
@@ -919,6 +920,9 @@ public class CoreContainer {
     configSetsHandler =
         createHandler(
             CONFIGSETS_HANDLER_PATH, cfg.getConfigSetsHandlerClass(), ConfigSetsHandler.class);
+
+    createHandler(ZkStateReader.NODE_ROLES, NodeRolesHandler.class.getName(), NodeRolesHandler.class);
+
     ClusterAPI clusterAPI = new ClusterAPI(collectionsHandler, configSetsHandler);
     registerV2ApiIfEnabled(clusterAPI);
     registerV2ApiIfEnabled(clusterAPI.commands);
